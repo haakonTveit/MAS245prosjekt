@@ -1,4 +1,18 @@
+/*
+Denne koden lastes opp på teensy 3.6 fo delprosjekt 2
+Brukt eksempelkode fra:
+ - https://github.com/skpang/Teensy-3.6-Dual-CAN-Bus-Breakout-Board/blob/master/teensy36_oled128x64_demo.ino
+   name=Teensy-3.6-Dual-CAN-Bus-Breakout-Board
+   version=1.0
+   date= July 2017
+   author=Skpang
 
+ - https://github.com/wollewald/MPU9250_WE
+   name=MPU6500_SPI_all_data
+   version=1.2.6
+   date= march 2022
+   author=Wolfgang Ewald <wolfgang.ewald@wolles-elektronikkiste.de>
+*/
 #include <FlexCAN.h>
 #include <SPI.h>
 #include <Wire.h>

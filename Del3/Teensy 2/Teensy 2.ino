@@ -34,11 +34,10 @@ static CAN_message_t msg;
 IntervalTimer TX_timer;
 int canCount=0; //Teller mottatt CAN meldinger 
 uint lastID=0;  //Brukes til display av IDen til siste mottatt CAN melding CAN message
-float IMUSI=0;
-float gx=0;
+float gx=0;     // Til holding av IMUdata i enhet [G]
 float gy=0;
 float gz=0;
-float SIx=0;
+float SIx=0;    //Til holding av IMUdata i SI enhet
 float SIy=0;
 float SIz=0;
 
@@ -74,9 +73,7 @@ void setup() {
   //Setup for OLED
   display.begin(SSD1306_SWITCHCAPVCC);
   display.clearDisplay(); // Clear buffer
-  delay(1000);
-
-   
+  delay(1000);   
 }
 
 void IMUMsg(void) //Sender IMU-data til CAN bus hvert sekund. I henhold til interrupt timer.
@@ -92,19 +89,14 @@ void IMUMsg(void) //Sender IMU-data til CAN bus hvert sekund. I henhold til inte
   msg.buf[5] = 0;
   msg.buf[6] = 0;
   msg.buf[7] = 0;
-  Can0.write(msg);
-
-  
+  Can0.write(msg);  
 }
-
 
 void loop() {
   
   xyzFloat gValue = myMPU6500.getGValues();
   float resultantG = myMPU6500.getResultantG(gValue);
 
- 
-  IMUSI=gValue.z*9.81;
   gx=gValue.x;
   gy=gValue.y;
   gz=gValue.z;
@@ -149,24 +141,20 @@ void loop() {
     lastID= inMsg.id; 
     if(lastID==34) //0x22=34 decimal
     {
-
-  //Konverterer fra G til SI-enhet for akselerasjon    
+  //Konverterer fra G til SI-enhet for akselerasjon.
+  // SI variablene brukes til å skrive til OLED display
  SIx=inMsg.buf[0]*0.0981; 
  SIy=inMsg.buf[1]*0.0981;
  SIz=inMsg.buf[2]*0.0981;
+  
+  //konverterer fra [G]*100 til [m/s^2]*10
       inMsg.len = 8;
-  inMsg.id = 35;  
+  inMsg.id = 35;  //0x23=35 decimal
   inMsg.buf[0] = inMsg.buf[0]*0.981;  //Sender akselerasjon i xyz [m/s^2] *10
   inMsg.buf[1] = inMsg.buf[1]*0.981;
   inMsg.buf[2] = inMsg.buf[2]*0.981;
-
   Can0.write(inMsg);
-
       Serial.println("Melding med ID=0x22 er sendt. Starter å sende IMU verdier til CAN-bus.");
+    } 
     }
-
-   
-    }
-
-
 }

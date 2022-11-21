@@ -33,14 +33,11 @@ static CAN_message_t msg;
 IntervalTimer TX_timer;
 int canCount=0; //Counting recieved can messages
 uint lastID=0;  //Used for displaying ID of last recieved CAN message
-float IMUSI=0;
 float gx=0;
 float gy=0;
 float gz=0;
 
-
 MPU6500_WE myMPU6500 = MPU6500_WE(MPU6500_ADDR);
-
 
 void setup() {
   
@@ -65,9 +62,7 @@ void setup() {
   //Setup for OLED
   display.begin(SSD1306_SWITCHCAPVCC);
   display.clearDisplay(); // Clearer bufferen
-  delay(1000);
-
-   
+  delay(1000);   
 }
 
 void IMUMsg(void) //Sender IMUdata hvert sekund til CAN BUS. Tidsintervallet er styrt av interrupt timeren.
@@ -85,20 +80,13 @@ void IMUMsg(void) //Sender IMUdata hvert sekund til CAN BUS. Tidsintervallet er 
   msg.buf[6] = 0;
   msg.buf[7] = 0;
   Can1.write(msg);
-
-  
 }
-
 
 void loop() {
   
   xyzFloat gValue = myMPU6500.getGValues();
-  //xyzFloat gyr = myMPU6500.getGyrValues();
-  //float temp = myMPU6500.getTemperature();
   float resultantG = myMPU6500.getResultantG(gValue);
-
-  //Serial.println("Acceleration in g (x,y,z):");
-  IMUSI=gValue.z*9.81;
+ 
   gx=gValue.x;
   gy=gValue.y;
   gz=gValue.z;
@@ -149,9 +137,5 @@ void loop() {
       Serial.println("Melding med ID=0x21 er sendt. Starter å sende IMU verdier til CAN-bus.");
       
     }
-
-   
     }
-
-
 }
